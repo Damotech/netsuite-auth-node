@@ -92,10 +92,7 @@ class NsApi {
             url,
             headers: { ...headers, "Content-Type": "application/json" },
             method,
-            data: body,
-            transitional: {
-                silentJSONParsing: false
-            }
+            data: body
         };
         return await axios_1.default.request(request);
     }
