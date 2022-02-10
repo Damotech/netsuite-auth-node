@@ -45,8 +45,6 @@ class NsApi {
         this.token = this.options.tokenId;
         this.secret = this.options.tokenSecret;
         this.accountId = options.accountId;
-        // this.debug = Debug("nsapi");
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         this.oauth = new oauth_1_0a_1.default({
             consumer: {
                 key: this.options.consumerKey,
@@ -73,7 +71,6 @@ class NsApi {
     async request(opts) {
         const { path, body } = opts;
         const method = opts.method;
-        // this.debug(opts);
         const urlAccountId = this.accountId.replace(/_/g, "-").toLowerCase();
         const url = `https://${urlAccountId}.suitetalk.api.netsuite.com/services/rest/${path}`;
         const requestOptions = {
@@ -82,7 +79,6 @@ class NsApi {
             data: body,
             includeBodyHash: true,
         };
-        // this.debug(`requestOptions ${JSON.stringify(requestOptions)}`);
         const token = {
             key: this.token,
             secret: this.secret,
