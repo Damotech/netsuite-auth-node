@@ -8,6 +8,7 @@ export default class NsApi {
     private readonly oauth;
     private readonly token;
     private readonly secret;
+    private debug;
     private accountId;
     constructor(options: NSApiOptions);
     private hashFunction;

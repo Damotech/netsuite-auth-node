@@ -10,18 +10,24 @@
 import OAuth, { RequestOptions } from "oauth-1.0a";
 import axios, { AxiosResponse, AxiosRequestConfig, Method } from "axios";
 import * as crypto from "crypto";
+import Debug from "debug";
 import { NSApiOptions, NSApiRequestOptions } from "./types";
 
 export default class NsApi {
   private readonly oauth: OAuth;
   private readonly token: string;
   private readonly secret: string;
+  private debug: Debug.Debugger | undefined;
   private accountId: string;
 
   constructor(private readonly options: NSApiOptions) {
     this.token = this.options.tokenId;
     this.secret = this.options.tokenSecret;
     this.accountId = options.accountId;
+    if (options.debugger) {
+      this.debug = Debug("nsapi");
+    }
+
     this.oauth = new OAuth({
       consumer: {
         key: this.options.consumerKey,
@@ -77,6 +83,11 @@ export default class NsApi {
   public async request(opts: NSApiRequestOptions): Promise<AxiosResponse> {
     const { path, body } = opts;
     const method = opts.method as Method;
+
+    if (this.debug) {
+      this.debug(opts);
+    }
+
     const urlAccountId = this.accountId.replace(/_/g, "-").toLowerCase();
     const url = `https://${urlAccountId}.suitetalk.api.netsuite.com/services/rest/${path}`;
 
@@ -86,6 +97,10 @@ export default class NsApi {
       data: body,
       includeBodyHash: true,
     };
+
+    if (this.debug) {
+      this.debug(`requestOptions ${JSON.stringify(requestOptions)}`);
+    }
 
     const token: OAuth.Token = {
       key: this.token,
@@ -100,7 +115,7 @@ export default class NsApi {
       url,
       headers: { ...headers, "Content-Type": "application/json" },
       method,
-      data: body
+      data: body,
     };
 
     return await axios.request(request);

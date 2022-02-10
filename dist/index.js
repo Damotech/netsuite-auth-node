@@ -33,6 +33,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const oauth_1_0a_1 = __importDefault(require("oauth-1.0a"));
 const axios_1 = __importDefault(require("axios"));
 const crypto = __importStar(require("crypto"));
+const debug_1 = __importDefault(require("debug"));
 class NsApi {
     constructor(options) {
         this.options = options;
@@ -45,6 +46,9 @@ class NsApi {
         this.token = this.options.tokenId;
         this.secret = this.options.tokenSecret;
         this.accountId = options.accountId;
+        if (options.debugger) {
+            this.debug = (0, debug_1.default)("nsapi");
+        }
         this.oauth = new oauth_1_0a_1.default({
             consumer: {
                 key: this.options.consumerKey,
@@ -71,6 +75,9 @@ class NsApi {
     async request(opts) {
         const { path, body } = opts;
         const method = opts.method;
+        if (this.debug) {
+            this.debug(opts);
+        }
         const urlAccountId = this.accountId.replace(/_/g, "-").toLowerCase();
         const url = `https://${urlAccountId}.suitetalk.api.netsuite.com/services/rest/${path}`;
         const requestOptions = {
@@ -79,6 +86,9 @@ class NsApi {
             data: body,
             includeBodyHash: true,
         };
+        if (this.debug) {
+            this.debug(`requestOptions ${JSON.stringify(requestOptions)}`);
+        }
         const token = {
             key: this.token,
             secret: this.secret,
@@ -88,7 +98,7 @@ class NsApi {
             url,
             headers: { ...headers, "Content-Type": "application/json" },
             method,
-            data: body
+            data: body,
         };
         return await axios_1.default.request(request);
     }
