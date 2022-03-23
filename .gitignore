@@ -118,3 +118,4 @@ dist
 temp
 .DS_Store
 /src/example.ts
+/.idea/
