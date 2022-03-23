@@ -23,4 +23,16 @@ export default class NsApi {
      * @param opts
      */
     request(opts: NSApiRequestOptions): Promise<AxiosResponse>;
+    /**
+     * Used to call any NetSuite Rest API endpoint
+     *
+     * @param path - path to the resource. For example: ecord/v1/salesOrder/13842048?expandSubResources=true
+     * @param method - POST,GET,PUT ETC.
+     * @type {string }
+     *
+     * @param body - String of for the body content.
+     * @type {string }
+     * @public
+     */
+    callRestlet(opts: NSApiRequestOptions): Promise<AxiosResponse>;
 }

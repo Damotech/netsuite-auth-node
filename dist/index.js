@@ -47,7 +47,7 @@ class NsApi {
         this.secret = this.options.tokenSecret;
         this.accountId = options.accountId;
         if (options.debugger) {
-            this.debug = (0, debug_1.default)("nsapi");
+            this.debug = debug_1.default("nsapi");
         }
         this.oauth = new oauth_1_0a_1.default({
             consumer: {
@@ -89,6 +89,43 @@ class NsApi {
         if (this.debug) {
             this.debug(`requestOptions ${JSON.stringify(requestOptions)}`);
         }
+        const token = {
+            key: this.token,
+            secret: this.secret,
+        };
+        const headers = this.generateAuthorizationHeaderFromRequest(requestOptions, token);
+        const request = {
+            url,
+            headers: { ...headers, "Content-Type": "application/json" },
+            method,
+            data: body,
+        };
+        return await axios_1.default.request(request);
+    }
+    /**
+     * Used to call any NetSuite Rest API endpoint
+     *
+     * @param path - path to the resource. For example: ecord/v1/salesOrder/13842048?expandSubResources=true
+     * @param method - POST,GET,PUT ETC.
+     * @type {string }
+     *
+     * @param body - String of for the body content.
+     * @type {string }
+     * @public
+     */
+    async callRestlet(opts) {
+        const { path, body } = opts;
+        const method = opts.method;
+        if (this.debug) {
+            this.debug(opts);
+        }
+        const urlAccountId = this.accountId.replace(/_/g, "-").toLowerCase();
+        const url = `https://${urlAccountId}.restlets.api.netsuite.com/app/site/hosting/restlet.nl${path}`;
+        const requestOptions = {
+            url,
+            method,
+            data: body,
+        };
         const token = {
             key: this.token,
             secret: this.secret,
