@@ -73,7 +73,7 @@ class NsApi {
      * @param opts
      */
     async request(opts) {
-        const { path, body } = opts;
+        const { path, body, transient } = opts;
         const method = opts.method;
         if (this.debug) {
             this.debug(opts);
@@ -93,10 +93,14 @@ class NsApi {
             key: this.token,
             secret: this.secret,
         };
-        const headers = this.generateAuthorizationHeaderFromRequest(requestOptions, token);
+        const authHeaders = this.generateAuthorizationHeaderFromRequest(requestOptions, token);
+        const reqHeaders = { ...authHeaders, "Content-Type": "application/json" };
+        if (transient) {
+            reqHeaders['Prefer'] = 'transient';
+        }
         const request = {
             url,
-            headers: { ...headers, "Content-Type": "application/json" },
+            headers: reqHeaders,
             method,
             data: body,
         };
