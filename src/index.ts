@@ -8,7 +8,7 @@
  */
 
 import OAuth, {RequestOptions} from "oauth-1.0a";
-import axios, {AxiosResponse, AxiosRequestConfig, Method} from "axios";
+import axios, {AxiosRequestConfig, AxiosResponse, Method} from "axios";
 import * as crypto from "crypto";
 import Debug from "debug";
 import {NSApiOptions, NSApiRequestOptions} from "./types";
@@ -81,7 +81,7 @@ export default class NsApi {
      * @param opts
      */
     public async request(opts: NSApiRequestOptions): Promise<AxiosResponse> {
-        const {path, body} = opts;
+        const {path, body, transient} = opts;
         const method = opts.method as Method;
 
         if (this.debug) {
@@ -106,14 +106,20 @@ export default class NsApi {
             key: this.token,
             secret: this.secret,
         };
-        const headers = this.generateAuthorizationHeaderFromRequest(
+
+        const authHeaders = this.generateAuthorizationHeaderFromRequest(
             requestOptions,
             token
         );
 
+        const reqHeaders: Record<string, string> = {...authHeaders, "Content-Type": "application/json"};
+        if (transient) {
+            reqHeaders['Prefer'] = 'transient';
+        }
+
         const request: AxiosRequestConfig = {
             url,
-            headers: {...headers, "Content-Type": "application/json"},
+            headers: reqHeaders,
             method,
             data: body,
         };

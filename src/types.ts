@@ -11,6 +11,7 @@ export interface NSApiRequestOptions {
   path?: string;
   method: string;
   body?: unknown;
+  transient?:boolean;
 }
 
 export type NSRestletRequestOptions = NSApiRequestOptions;
