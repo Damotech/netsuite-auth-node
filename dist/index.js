@@ -43,8 +43,8 @@ class NsApi {
                 .update(base_string)
                 .digest("base64");
         };
-        this.token = this.options.tokenId;
-        this.secret = this.options.tokenSecret;
+        this.tokenKey = this.options.tokenId;
+        this.tokenSecret = this.options.tokenSecret;
         this.accountId = options.accountId;
         if (options.debugger) {
             this.debug = debug_1.default("nsapi");
@@ -90,8 +90,8 @@ class NsApi {
             this.debug(`requestOptions ${JSON.stringify(requestOptions)}`);
         }
         const token = {
-            key: this.token,
-            secret: this.secret,
+            key: this.tokenKey,
+            secret: this.tokenSecret,
         };
         const authHeaders = this.generateAuthorizationHeaderFromRequest(requestOptions, token);
         const reqHeaders = { ...authHeaders, "Content-Type": "application/json" };
@@ -109,12 +109,13 @@ class NsApi {
     /**
      * Used to call any NetSuite Rest API endpoint
      *
-     * @param path - path to the resource. For example: ecord/v1/salesOrder/13842048?expandSubResources=true
-     * @param method - POST,GET,PUT ETC.
-     * @type {string }
-     *
-     * @param body - String of for the body content.
-     * @type {string }
+     * @param opts - Object with request options
+     * @param opts.path - path to the resource. For example: record/v1/salesOrder/13842048?expandSubResources=true
+     * @type { string }
+     * @param opts.method - POST,GET,PUT ETC.
+     * @type { string }
+     * @param opts.body - JS Object to be sent in the body of the request
+     * @type { Object }
      * @public
      */
     async callRestlet(opts) {
@@ -128,20 +129,20 @@ class NsApi {
         const requestOptions = {
             url,
             method,
-            data: body,
+            data: null,
         };
         const token = {
-            key: this.token,
-            secret: this.secret,
+            key: this.tokenKey,
+            secret: this.tokenSecret,
         };
-        const headers = this.generateAuthorizationHeaderFromRequest(requestOptions, token);
+        const authHeaders = this.generateAuthorizationHeaderFromRequest(requestOptions, token);
         const request = {
             url,
-            headers: { ...headers, "Content-Type": "application/json" },
+            headers: { ...authHeaders, "Content-Type": "application/json" },
             method,
             data: body,
         };
-        return await axios_1.default.request(request);
+        return axios_1.default.request(request);
     }
 }
 exports.default = NsApi;

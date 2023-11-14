@@ -6,8 +6,8 @@ import { NSApiOptions, NSApiRequestOptions } from "./types";
 export default class NsApi {
     private readonly options;
     private readonly oauth;
-    private readonly token;
-    private readonly secret;
+    private readonly tokenKey;
+    private readonly tokenSecret;
     private debug;
     private accountId;
     constructor(options: NSApiOptions);
@@ -26,12 +26,13 @@ export default class NsApi {
     /**
      * Used to call any NetSuite Rest API endpoint
      *
-     * @param path - path to the resource. For example: ecord/v1/salesOrder/13842048?expandSubResources=true
-     * @param method - POST,GET,PUT ETC.
-     * @type {string }
-     *
-     * @param body - String of for the body content.
-     * @type {string }
+     * @param opts - Object with request options
+     * @param opts.path - path to the resource. For example: record/v1/salesOrder/13842048?expandSubResources=true
+     * @type { string }
+     * @param opts.method - POST,GET,PUT ETC.
+     * @type { string }
+     * @param opts.body - JS Object to be sent in the body of the request
+     * @type { Object }
      * @public
      */
     callRestlet(opts: NSApiRequestOptions): Promise<AxiosResponse>;

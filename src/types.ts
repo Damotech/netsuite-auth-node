@@ -10,7 +10,7 @@ export interface NSApiOptions {
 export interface NSApiRequestOptions {
   path?: string;
   method: string;
-  body?: unknown;
+  body?: Record<string, unknown>;
   transient?:boolean;
 }
 
