@@ -15,14 +15,14 @@ import {NSApiOptions, NSApiRequestOptions} from "./types";
 
 export default class NsApi {
     private readonly oauth: OAuth;
-    private readonly token: string;
-    private readonly secret: string;
+    private readonly tokenKey: string;
+    private readonly tokenSecret: string;
     private debug: Debug.Debugger | undefined;
     private accountId: string;
 
     constructor(private readonly options: NSApiOptions) {
-        this.token = this.options.tokenId;
-        this.secret = this.options.tokenSecret;
+        this.tokenKey = this.options.tokenId;
+        this.tokenSecret = this.options.tokenSecret;
         this.accountId = options.accountId;
         if (options.debugger) {
             this.debug = Debug("nsapi");
@@ -103,8 +103,8 @@ export default class NsApi {
         }
 
         const token: OAuth.Token = {
-            key: this.token,
-            secret: this.secret,
+            key: this.tokenKey,
+            secret: this.tokenSecret,
         };
 
         const authHeaders = this.generateAuthorizationHeaderFromRequest(
@@ -130,12 +130,13 @@ export default class NsApi {
     /**
      * Used to call any NetSuite Rest API endpoint
      *
-     * @param path - path to the resource. For example: ecord/v1/salesOrder/13842048?expandSubResources=true
-     * @param method - POST,GET,PUT ETC.
-     * @type {string }
-     *
-     * @param body - String of for the body content.
-     * @type {string }
+     * @param opts - Object with request options
+     * @param opts.path - path to the resource. For example: record/v1/salesOrder/13842048?expandSubResources=true
+     * @type { string }
+     * @param opts.method - POST,GET,PUT ETC.
+     * @type { string }
+     * @param opts.body - JS Object to be sent in the body of the request
+     * @type { Object }
      * @public
      */
     public async callRestlet(opts: NSApiRequestOptions): Promise<AxiosResponse> {
@@ -152,24 +153,25 @@ export default class NsApi {
         const requestOptions: OAuth.RequestOptions = {
             url,
             method,
-            data: body,
+            data: null,
         };
 
         const token: OAuth.Token = {
-            key: this.token,
-            secret: this.secret,
+            key: this.tokenKey,
+            secret: this.tokenSecret,
         };
-        const headers = this.generateAuthorizationHeaderFromRequest(
+         const authHeaders = this.generateAuthorizationHeaderFromRequest(
             requestOptions,
             token
         );
 
         const request: AxiosRequestConfig = {
             url,
-            headers: {...headers, "Content-Type": "application/json"},
+            headers: {...authHeaders, "Content-Type": "application/json"},
             method,
             data: body,
         };
-        return await axios.request(request);
+        return axios.request(request);
     }
+
 }
